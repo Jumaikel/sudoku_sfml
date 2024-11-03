@@ -12,13 +12,14 @@ private:
 
 public:
     SudokuGrid(sf::Font& font, float gridSize);
+    void generatePuzzle();
     void setValue(int row, int col, int value);
     int getValue(int row, int col) const;
     bool isValidMove(int row, int col, int value) const;
     bool isSafe(int row, int col, int num);
     void draw(sf::RenderWindow& window);
     bool solveGrid();
-    void generatePuzzle();
     void removeCells(int numCells);
+    bool isCellEditable(int row, int col) const;
 };
 

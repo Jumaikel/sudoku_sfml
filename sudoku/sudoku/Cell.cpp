@@ -43,7 +43,7 @@ bool Cell::getIsEditable() const {
 // Establece la posición de la celda (para colocación en el tablero)
 void Cell::setPosition(float x, float y) {
     shape.setPosition(x, y);
-    text.setPosition(x + 15.0f, y + 10.0f); // Ajusta la posición del texto dentro de la celda
+    text.setPosition(x + 80.0f / 3, y + 80.0f / 3); // Ajusta la posición del texto dentro de la celda
 }
 
 // Dibuja la celda en la ventana
@@ -53,3 +53,4 @@ void Cell::draw(sf::RenderWindow& window) {
         window.draw(text);
     }
 }
+

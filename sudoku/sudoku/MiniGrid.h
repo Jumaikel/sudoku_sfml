@@ -18,6 +18,7 @@ public:
     int getValue(int row, int col) const;
     void draw(sf::RenderWindow& window, float offsetX, float offsetY);
     void drawFrame(sf::RenderWindow& window, float offsetX, float offsetY);
+    bool isCellEditable(int row, int col) const;
 };
 
 

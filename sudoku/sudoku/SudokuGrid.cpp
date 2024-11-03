@@ -29,17 +29,17 @@ int SudokuGrid::getValue(int row, int col) const {
 }
 
 void SudokuGrid::draw(sf::RenderWindow& window) {
+    float offsetX = 300.0f; // Desplazamiento horizontal
+    float offsetY = 10.0f;  // Desplazamiento vertical
 
-
+    // Dibuja cada MiniGrid en la posición con desplazamiento
     for (int row = 0; row < 3; ++row) {
         for (int col = 0; col < 3; ++col) {
-            // Calcula la posición de cada MiniGrid
-            float offsetX = (col) * gridSize;
-            float offsetY = (row) * gridSize;
-            grids[row][col].draw(window, offsetX + 300, offsetY + 10);
+            grids[row][col].draw(window, offsetX + col * gridSize, offsetY + row * gridSize);
         }
     }
 }
+
 
 // Método para verificar si una entrada es válida
 bool SudokuGrid::isValidMove(int row, int col, int value) const {
@@ -110,7 +110,7 @@ void SudokuGrid::generatePuzzle() {
     solveGrid();
 
     // Eliminar celdas para crear el rompecabezas
-    int numCellsToRemove = 0; // Número de celdas a eliminar (dificultad ajustable)
+    int numCellsToRemove = 40; // Número de celdas a eliminar (dificultad ajustable)
     removeCells(numCellsToRemove);
 }
 
@@ -125,4 +125,8 @@ void SudokuGrid::removeCells(int numCells) {
             removed++;
         }
     }
+}
+
+bool SudokuGrid::isCellEditable(int row, int col) const {
+    return grids[row / 3][col / 3].isCellEditable(row % 3, col % 3);
 }

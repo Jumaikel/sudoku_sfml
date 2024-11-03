@@ -16,13 +16,13 @@ private:
 public:
     SudokuGame();
     void run();
-
-private:
     void processEvents();
-    void handleMouseClick(int mouseX, int mouseY);
-    void handleKeyInput(sf::Keyboard::Key key);
     void update();
     void render();
+
+private:
+    void handleMouseClick(int x, int y);
+    void handleKeyPress(sf::Keyboard::Key key);
 };
 
 

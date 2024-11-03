@@ -4,6 +4,7 @@ SudokuGame::SudokuGame() : window(sf::VideoMode(1366, 768), "Sudoku Game"), sudo
     if (!font.loadFromFile("resources/fonts/SpaceComics.ttf")) {
         throw std::runtime_error("No se pudo cargar la fuente.");
     }
+    sudokuGrid.generatePuzzle();
 }
 
 // Inicia el bucle principal del juego

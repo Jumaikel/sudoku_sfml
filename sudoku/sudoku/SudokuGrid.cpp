@@ -62,3 +62,67 @@ bool SudokuGrid::isValidMove(int row, int col, int value) const {
     }
     return true;
 }
+
+bool SudokuGrid::isSafe(int row, int col, int num) {
+    // Verifica la fila y la columna
+    for (int i = 0; i < 9; ++i) {
+        if (getValue(row, i) == num || getValue(i, col) == num) {
+            return false;
+        }
+    }
+
+    // Verifica el bloque 3x3
+    int startRow = (row / 3) * 3;
+    int startCol = (col / 3) * 3;
+    for (int i = 0; i < 3; ++i) {
+        for (int j = 0; j < 3; ++j) {
+            if (getValue(startRow + i, startCol + j) == num) {
+                return false;
+            }
+        }
+    }
+    return true;
+}
+
+
+bool SudokuGrid::solveGrid() {
+    for (int row = 0; row < 9; ++row) {
+        for (int col = 0; col < 9; ++col) {
+            if (getValue(row, col) == 0) { // Encuentra una celda vacía
+                for (int num = 1; num <= 9; ++num) {
+                    if (isSafe(row, col, num)) {
+                        setValue(row, col, num); // Coloca el número
+                        if (solveGrid()) {
+                            return true;
+                        }
+                        setValue(row, col, 0); // Retrocede si no es válido
+                    }
+                }
+                return false;
+            }
+        }
+    }
+    return true; // Retorna verdadero si la cuadrícula está completa
+}
+
+void SudokuGrid::generatePuzzle() {
+    // Llenar la cuadrícula usando backtracking
+    solveGrid();
+
+    // Eliminar celdas para crear el rompecabezas
+    int numCellsToRemove = 0; // Número de celdas a eliminar (dificultad ajustable)
+    removeCells(numCellsToRemove);
+}
+
+void SudokuGrid::removeCells(int numCells) {
+    int removed = 0;
+    while (removed < numCells) {
+        int row = rand() % 9;
+        int col = rand() % 9;
+
+        if (getValue(row, col) != 0) {
+            setValue(row, col, 0); // Elimina el valor de la celda
+            removed++;
+        }
+    }
+}

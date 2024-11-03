@@ -1,0 +1,35 @@
+# Visual Studio directories and files
+.vscode/
+.vs/
+*.vcxproj.user
+*.vcxproj.filters
+*.suo
+*.ipch/
+*.obj/
+*.pch
+*.idb
+*.pdb
+*.opendb
+*.tlog/
+*.lastbuildstate
+*.cache/
+*.log
+*.dmp
+Debug/
+Release/
+x64/
+x86/
+
+# CMake generated files
+CMakeFiles/
+CMakeCache.txt
+cmake_install.cmake
+CMakeLists.txt.user
+
+# Windows specific files
+Thumbs.db
+desktop.ini
+$RECYCLE.BIN/
+
+# SFML specific cache or temporary files (if any generated)
+sfml-cache/

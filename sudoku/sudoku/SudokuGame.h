@@ -10,19 +10,34 @@ private:
     sf::RenderWindow window;
     sf::Font font;
     SudokuGrid sudokuGrid;
-    int selectedRow = -1;  // Fila seleccionada por el usuario
-    int selectedCol = -1;  // Columna seleccionada por el usuario
+    int selectedRow = -1;
+    int selectedCol = -1;
+    sf::RectangleShape backButton;
+    sf::RectangleShape saveButton;
+    sf::Text backText;
+    sf::Text saveText;
+    sf::Text nameLabel;
+    sf::String nameInput;
+    sf::RectangleShape nameInputBox;
+    bool isHoveringBackButton = false;
+    bool isHoveringSaveButton = false;
+    bool isHoveringNameInputBox = false;
+    sf::Clock gameClock;
+    float elapsedTime;
+
+    bool isNameInputSelected = false;
+
+    string errorMessage;
 
 public:
     SudokuGame();
     void run();
     void processEvents();
-    void update();
     void render();
+    void saveGame();
 
 private:
     void handleMouseClick(int x, int y);
     void handleKeyPress(sf::Keyboard::Key key);
+    void handleTextInput(sf::Event& event);
 };
-
-

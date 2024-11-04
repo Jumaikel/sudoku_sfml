@@ -1,16 +1,13 @@
 #include "SudokuGrid.h"
 
 SudokuGrid::SudokuGrid(sf::Font& font, float gridSize = 250.0f) : gridSize(gridSize) {
-    // Inicializa cada MiniGrid en la matriz de 3x3
     for (int row = 0; row < 3; ++row) {
         for (int col = 0; col < 3; ++col) {
-            // Inicializa el MiniGrid en la posición especificada
             grids[row][col] = MiniGrid(font, gridSize / 3);
         }
     }
 }
 
-// Establece el valor en una posición específica de la cuadrícula 9x9
 void SudokuGrid::setValue(int row, int col, int value) {
     int miniGridRow = row / 3;
     int miniGridCol = col / 3;
@@ -19,7 +16,6 @@ void SudokuGrid::setValue(int row, int col, int value) {
     grids[miniGridRow][miniGridCol].setValue(cellRow, cellCol, value);
 }
 
-// Obtiene el valor en una posición específica de la cuadrícula 9x9
 int SudokuGrid::getValue(int row, int col) const {
     int miniGridRow = row / 3;
     int miniGridCol = col / 3;
@@ -36,18 +32,13 @@ void SudokuGrid::draw(sf::RenderWindow& window, float offsetX, float offsetY) {
     }
 }
 
-
-
-// Método para verificar si una entrada es válida
 bool SudokuGrid::isValidMove(int row, int col, int value) const {
-    // Comprueba si el valor ya está en la misma fila o columna
     for (int i = 0; i < 9; ++i) {
         if (getValue(row, i) == value || getValue(i, col) == value) {
             return false;
         }
     }
 
-    // Comprueba si el valor ya está en la misma subcuadrícula 3x3
     int miniGridRow = row / 3;
     int miniGridCol = col / 3;
     for (int r = 0; r < 3; ++r) {
@@ -61,14 +52,12 @@ bool SudokuGrid::isValidMove(int row, int col, int value) const {
 }
 
 bool SudokuGrid::isSafe(int row, int col, int num) {
-    // Verifica la fila y la columna
     for (int i = 0; i < 9; ++i) {
         if (getValue(row, i) == num || getValue(i, col) == num) {
             return false;
         }
     }
 
-    // Verifica el bloque 3x3
     int startRow = (row / 3) * 3;
     int startCol = (col / 3) * 3;
     for (int i = 0; i < 3; ++i) {
@@ -85,29 +74,27 @@ bool SudokuGrid::isSafe(int row, int col, int num) {
 bool SudokuGrid::solveGrid() {
     for (int row = 0; row < 9; ++row) {
         for (int col = 0; col < 9; ++col) {
-            if (getValue(row, col) == 0) { // Encuentra una celda vacía
+            if (getValue(row, col) == 0) {
                 for (int num = 1; num <= 9; ++num) {
                     if (isSafe(row, col, num)) {
-                        setValue(row, col, num); // Coloca el número
+                        setValue(row, col, num);
                         if (solveGrid()) {
                             return true;
                         }
-                        setValue(row, col, 0); // Retrocede si no es válido
+                        setValue(row, col, 0);
                     }
                 }
                 return false;
             }
         }
     }
-    return true; // Retorna verdadero si la cuadrícula está completa
+    return true;
 }
 
 void SudokuGrid::generatePuzzle() {
-    // Llenar la cuadrícula usando backtracking
     solveGrid();
 
-    // Eliminar celdas para crear el rompecabezas
-    int numCellsToRemove = 40; // Número de celdas a eliminar (dificultad ajustable)
+    int numCellsToRemove = 40;
     removeCells(numCellsToRemove);
 }
 
@@ -118,7 +105,7 @@ void SudokuGrid::removeCells(int numCells) {
         int col = rand() % 9;
 
         if (getValue(row, col) != 0) {
-            setValue(row, col, 0); // Elimina el valor de la celda
+            setValue(row, col, 0);
             removed++;
         }
     }

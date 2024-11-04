@@ -17,6 +17,7 @@ public:
     void setValue(int newValue);
     int getValue() const;
     bool getIsEditable() const;
+    void setEditable(bool editable);
     void draw(sf::RenderWindow& window);
     void setPosition(float x, float y);
 };

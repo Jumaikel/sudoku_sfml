@@ -1,7 +1,15 @@
 #include "Cell.h"
 
-Cell::Cell() : value(0), isEditable(true) {
-    
+Cell::Cell() : value(0), isEditable(false) {
+	shape.setSize(sf::Vector2f(80.0f, 80.0f)); // Tamaño de la celda (ajustable)
+	shape.setFillColor(sf::Color::White);       // Color de fondo
+	shape.setOutlineColor(sf::Color::Black);
+	shape.setOutlineThickness(1.0f);
+
+	// Configuración del texto de la celda
+	text.setCharacterSize(24);   // Tamaño de la fuente
+	text.setFillColor(sf::Color::Black);
+	text.setString("");         // Inicialmente no se muestra ningún texto
 }
 
 Cell::Cell(int value, bool isEditable, sf::Font& font)

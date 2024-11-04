@@ -1,10 +1,18 @@
 #include "MiniGrid.h"
 
 MiniGrid::MiniGrid() : cellSize(80.0f) {
-
+    // Inicializa cada celda en la cuadrícula de 3x3
+    for (int row = 0; row < 3; ++row) {
+        for (int col = 0; col < 3; ++col) {
+            // Por defecto, cada celda empieza con valor 0 y es editable
+            cells[row][col] = Cell(); // Aquí necesitas una referencia a 'font', por lo que esto no funcionará
+            cells[row][col].setPosition(col * cellSize, row * cellSize);
+        }
+    }
 }
 
-MiniGrid::MiniGrid(sf::Font& font, float cellSize = 80.0f) : cellSize(cellSize) {
+
+MiniGrid::MiniGrid(sf::Font& font, float cellSize) : cellSize(cellSize) {
     // Inicializa cada celda en la cuadrícula de 3x3
     for (int row = 0; row < 3; ++row) {
         for (int col = 0; col < 3; ++col) {
@@ -19,6 +27,9 @@ MiniGrid::MiniGrid(sf::Font& font, float cellSize = 80.0f) : cellSize(cellSize) 
 void MiniGrid::setValue(int row, int col, int value) {
     if (row >= 0 && row < 3 && col >= 0 && col < 3) {
         cells[row][col].setValue(value);
+    }
+    else {
+        // Manejo de error (puedes lanzar una excepción o imprimir un mensaje)
     }
 }
 
@@ -49,8 +60,8 @@ void MiniGrid::drawFrame(sf::RenderWindow& window, float offsetX, float offsetY)
     frame.setSize(sf::Vector2f((cellSize - 1) * 3, (cellSize - 1) * 3)); // Ajusta el tamaño del marco
     frame.setPosition(offsetX, offsetY);
     frame.setFillColor(sf::Color::Transparent); // Relleno transparente
-    frame.setOutlineColor(sf::Color::Red); // Color del borde
-    frame.setOutlineThickness(2.0f); // Grosor del borde
+    frame.setOutlineColor(sf::Color(1, 93, 157)); // Color del borde
+    frame.setOutlineThickness(4); // Grosor del borde
 
     // Dibujar el marco en la ventana
     window.draw(frame);
@@ -59,4 +70,3 @@ void MiniGrid::drawFrame(sf::RenderWindow& window, float offsetX, float offsetY)
 bool MiniGrid::isCellEditable(int row, int col) const {
     return cells[row][col].getIsEditable();
 }
-

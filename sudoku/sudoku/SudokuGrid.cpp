@@ -28,17 +28,14 @@ int SudokuGrid::getValue(int row, int col) const {
     return grids[miniGridRow][miniGridCol].getValue(cellRow, cellCol);
 }
 
-void SudokuGrid::draw(sf::RenderWindow& window) {
-    float offsetX = 300.0f; // Desplazamiento horizontal
-    float offsetY = 10.0f;  // Desplazamiento vertical
-
-    // Dibuja cada MiniGrid en la posición con desplazamiento
+void SudokuGrid::draw(sf::RenderWindow& window, float offsetX, float offsetY) {
     for (int row = 0; row < 3; ++row) {
         for (int col = 0; col < 3; ++col) {
             grids[row][col].draw(window, offsetX + col * gridSize, offsetY + row * gridSize);
         }
     }
 }
+
 
 
 // Método para verificar si una entrada es válida

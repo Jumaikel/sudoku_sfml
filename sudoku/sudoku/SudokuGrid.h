@@ -15,9 +15,9 @@ public:
     void generatePuzzle();
     void setValue(int row, int col, int value);
     int getValue(int row, int col) const;
+    void draw(sf::RenderWindow& window, float offsetX, float offsetY);
     bool isValidMove(int row, int col, int value) const;
     bool isSafe(int row, int col, int num);
-    void draw(sf::RenderWindow& window);
     bool solveGrid();
     void removeCells(int numCells);
     bool isCellEditable(int row, int col) const;

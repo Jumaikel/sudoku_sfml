@@ -136,12 +136,14 @@
     <ClCompile Include="Cell.cpp" />
     <ClCompile Include="MiniGrid.cpp" />
     <ClCompile Include="main.cpp" />
+    <ClCompile Include="StartScreen.cpp" />
     <ClCompile Include="SudokuGame.cpp" />
     <ClCompile Include="SudokuGrid.cpp" />
   </ItemGroup>
   <ItemGroup>
     <ClInclude Include="Cell.h" />
     <ClInclude Include="MiniGrid.h" />
+    <ClInclude Include="StartScreen.h" />
     <ClInclude Include="SudokuGame.h" />
     <ClInclude Include="SudokuGrid.h" />
   </ItemGroup>

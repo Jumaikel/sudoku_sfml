@@ -1,19 +1,23 @@
 
 #include "Cell.h"
 
-Cell::Cell() : value(0), isEditable(false), isSelected(false) {
+Cell::Cell() : value(0), isEditable(false), isSelected(false), font(*(new sf::Font)) {
+    if (!font.loadFromFile("resources/fonts/SpaceComics.ttf")) {
+        return;
+    }
     shape.setSize(sf::Vector2f(80.0f, 80.0f));
     shape.setFillColor(sf::Color::White);
     shape.setOutlineColor(sf::Color::Black);
     shape.setOutlineThickness(1.0f);
 
+    text.setFont(font);
     text.setCharacterSize(24);
     text.setFillColor(sf::Color::Black);
     text.setString("");
 }
 
-Cell::Cell(int value, bool isEditable, sf::Font& font)
-    : value(value), isEditable(isEditable), isSelected(false) {
+Cell::Cell(int value, bool isEditable, sf::Font& pfont)
+    : value(value), isEditable(isEditable), isSelected(false), font(pfont) {
 
     shape.setSize(sf::Vector2f(80.0f, 80.0f));
     shape.setFillColor(isEditable ? sf::Color::White : sf::Color(200, 200, 200));

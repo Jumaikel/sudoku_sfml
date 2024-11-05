@@ -11,10 +11,11 @@ private:
     bool isSelected;
     sf::RectangleShape shape;
     sf::Text text;
+    sf::Font& font;
 
 public:
     Cell();
-    Cell(int value, bool isEditable, sf::Font& font);
+    Cell(int value, bool isEditable, sf::Font& pfont);
     void setValue(int newValue);
     int getValue() const;
     bool getIsEditable() const;

@@ -134,6 +134,8 @@
   </ItemDefinitionGroup>
   <ItemGroup>
     <ClCompile Include="Cell.cpp" />
+    <ClCompile Include="GameState.cpp" />
+    <ClCompile Include="LoadScreen.cpp" />
     <ClCompile Include="main.cpp" />
     <ClCompile Include="StartScreen.cpp" />
     <ClCompile Include="SudokuGame.cpp" />
@@ -141,6 +143,8 @@
   </ItemGroup>
   <ItemGroup>
     <ClInclude Include="Cell.h" />
+    <ClInclude Include="GameState.h" />
+    <ClInclude Include="LoadScreen.h" />
     <ClInclude Include="StartScreen.h" />
     <ClInclude Include="SudokuGame.h" />
     <ClInclude Include="SudokuGrid.h" />

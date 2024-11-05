@@ -12,12 +12,25 @@ private:
     sf::Text playText;
     sf::Text loadText;
     sf::Text exitText;
+    sf::RenderWindow& window;
+    sf::Font& font;
+
+    bool isHoveringPlayButton = false;
+    bool isHoveringLoadButton = false;
+    bool isHoveringExitInputBox = false;
+
+    bool startGame = false;
+    bool loadGame = false;
+    bool exitGame = false;
 
 public:
-    StartScreen(sf::Font& font);
-    void draw(sf::RenderWindow& window);
-    bool isPlayButtonClicked(const sf::Vector2f& mousePos) const;
-    bool isLoadButtonClicked(const sf::Vector2f& mousePos) const;
-    bool isExitButtonClicked(const sf::Vector2f& mousePos) const;
+    StartScreen( sf::RenderWindow& window, sf::Font& pfont);
+    void draw();
+    bool shouldStartGame() const;
+    bool shouldLoadGame() const;
+    bool shouldExit() const;
+    void handleMouseClick(int x, int y);
+    void processEvents();
+   
 };
 

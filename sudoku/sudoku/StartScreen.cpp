@@ -1,7 +1,10 @@
 #include <SFML/Graphics.hpp>
 #include "StartScreen.h"
+#include "SudokuGame.h"
+#include "LoadScreen.h"
 
-StartScreen::StartScreen(sf::Font& font) {
+StartScreen::StartScreen(sf::RenderWindow& window, sf::Font& pfont) : window(window), font(pfont) {
+
     if (!backgroundTexture.loadFromFile("resources/imgs/background.png")) {
         throw std::runtime_error("No se pudo cargar la imagen de fondo.");
     }
@@ -50,47 +53,83 @@ StartScreen::StartScreen(sf::Font& font) {
     exitText.setPosition(exitButton.getPosition().x + 20, exitButton.getPosition().y + 15);
 }
 
-void StartScreen::draw(sf::RenderWindow& window) {
-    sf::Vector2f mousePos = window.mapPixelToCoords(sf::Mouse::getPosition(window));
+void StartScreen::draw() {
+    if (startGame || loadGame) {
+		startGame = false;
+		loadGame = false;
+    }
+	    window.clear();
+        processEvents();
+        if (isHoveringPlayButton) {
+            playButton.setFillColor(sf::Color(6, 140, 210));
+        }
+        else {
+            playButton.setFillColor(sf::Color(1, 93, 157));
+        }
 
-    if (playButton.getGlobalBounds().contains(mousePos)) {
-        playButton.setFillColor(sf::Color(6, 140, 210));
-    }
-    else {
-        playButton.setFillColor(sf::Color(1, 93, 157));
-    }
+        if (isHoveringLoadButton) {
+            loadButton.setFillColor(sf::Color(6, 140, 210));
+        }
+        else {
+            loadButton.setFillColor(sf::Color(1, 93, 157));
+        }
 
-    if (loadButton.getGlobalBounds().contains(mousePos)) {
-        loadButton.setFillColor(sf::Color(6, 140, 210));
-    }
-    else {
-        loadButton.setFillColor(sf::Color(1, 93, 157));
-    }
+        if (isHoveringExitInputBox) {
+            exitButton.setFillColor(sf::Color(6, 140, 210));
+        }
+        else {
+            exitButton.setFillColor(sf::Color(1, 93, 157));
+        }
 
-    if (exitButton.getGlobalBounds().contains(mousePos)) {
-        exitButton.setFillColor(sf::Color(6, 140, 210));
-    }
-    else {
-        exitButton.setFillColor(sf::Color(1, 93, 157));
-    }
-
-    window.draw(backgroundSprite);
-    window.draw(playButton);
-    window.draw(playText);
-    window.draw(loadButton);
-    window.draw(loadText);
-    window.draw(exitButton);
-    window.draw(exitText);
+        window.draw(backgroundSprite);
+        window.draw(playButton);
+        window.draw(playText);
+        window.draw(loadButton);
+        window.draw(loadText);
+        window.draw(exitButton);
+        window.draw(exitText);
+        window.display();
 }
 
-bool StartScreen::isPlayButtonClicked(const sf::Vector2f& mousePos) const {
-    return playButton.getGlobalBounds().contains(mousePos);
+bool StartScreen::shouldStartGame() const {
+    return startGame;
 }
 
-bool StartScreen::isLoadButtonClicked(const sf::Vector2f& mousePos) const {
-    return loadButton.getGlobalBounds().contains(mousePos);
+bool StartScreen::shouldLoadGame() const {
+    return loadGame;
 }
 
-bool StartScreen::isExitButtonClicked(const sf::Vector2f& mousePos) const {
-    return exitButton.getGlobalBounds().contains(mousePos);
+bool StartScreen::shouldExit() const {
+    return exitGame;
+}
+
+void StartScreen::handleMouseClick(int x, int y) {
+    if (playButton.getGlobalBounds().contains(x, y)) {
+        startGame = true;
+    }
+    else if (loadButton.getGlobalBounds().contains(x, y)) {
+        loadGame = true;
+    }
+    else if (exitButton.getGlobalBounds().contains(x, y)) {
+        exitGame = true;
+    }
+}
+
+void StartScreen::processEvents() {
+    sf::Event event;
+    sf::Vector2i mousePosition = sf::Mouse::getPosition(window);
+
+    while (window.pollEvent(event)) {
+        if (event.type == sf::Event::Closed) {
+            exitGame = true;
+        }
+
+        isHoveringPlayButton = playButton.getGlobalBounds().contains(mousePosition.x, mousePosition.y);
+        isHoveringLoadButton = loadButton.getGlobalBounds().contains(mousePosition.x, mousePosition.y);
+        isHoveringExitInputBox = exitButton.getGlobalBounds().contains(mousePosition.x, mousePosition.y);
+
+        if (event.type == sf::Event::MouseButtonPressed && event.mouseButton.button == sf::Mouse::Left) {
+            handleMouseClick(event.mouseButton.x, event.mouseButton.y);
+        }
+    }
 }

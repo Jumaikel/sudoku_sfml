@@ -2,21 +2,30 @@
 #include <SFML/Graphics.hpp>
 #include "SudokuGrid.h"
 
+#include "StartScreen.h"
+#include <string>
+#include <fstream>
+#include <ctime> 
+
 using namespace std;
 
 class SudokuGame {
 public:
-    SudokuGame();
+    SudokuGame(sf::RenderWindow& window, sf::Font& pfont);
+    SudokuGame(sf::RenderWindow& window, sf::Font& pfont, vector<vector<int>> grid, vector<vector<int>> solGrid, string name, float elapsedTime);
+    void initialize();
     void drawSolutionGrid();
     void run();
+    bool shouldGoBack() const;
 
 private:
     int lastPressedNumber;
-    sf::RenderWindow window;
-    sf::Font font;
+    sf::RenderWindow& window;
+    sf::Font& font;
     SudokuGrid* sudokuGrid;
     sf::Clock clock;
     bool showWinScreen = false;
+    bool goBack = false;
     vector<vector<int>> solutionGrid;
     vector<vector<int>> initialGrid;
     sf::Text solutionText;
@@ -41,7 +50,9 @@ private:
 
     sf::Clock gameClock;
     float elapsedTime = 0.0f;
-    std::string errorMessage;
+    std::string message;
+
+    sf::Text messageText;
 
     bool isHoveringBackButton = false;
     bool isHoveringSaveButton = false;

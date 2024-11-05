@@ -9,7 +9,6 @@ class SudokuGrid {
 public:
     SudokuGrid();
     SudokuGrid(vector<vector<int>> grid, vector<vector<int>> solGrid, sf::Font& font);
-    //SudokuGrid(int grid[9][9], int solGrid[9][9], sf::Font& font);
     void draw(sf::RenderWindow& window);
     Cell* getCellAt(float x, float y);
     void handleCellSelection(int x, int y);

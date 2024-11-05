@@ -7,6 +7,7 @@ using namespace std;
 class SudokuGame {
 public:
     SudokuGame();
+    void drawSolutionGrid();
     void run();
 
 private:
@@ -16,8 +17,13 @@ private:
     SudokuGrid* sudokuGrid;
     sf::Clock clock;
     bool showWinScreen = false;
-   vector<vector<int>> solutionGrid;
+    vector<vector<int>> solutionGrid;
     vector<vector<int>> initialGrid;
+    sf::Text solutionText;
+    bool showSolution = false;
+    sf::RectangleShape solutionButton;
+    sf::Text solutionButtonText;
+
 
     int selectedRow = -1;
     int selectedCol = -1;
@@ -40,9 +46,11 @@ private:
     bool isHoveringBackButton = false;
     bool isHoveringSaveButton = false;
     bool isHoveringNameInputBox = false;
+	bool isHoveringShowSolutionButton = false;  
 
     void processEvents();
     void render();
+    void drawThickLines(sf::RenderWindow& window);
     void handleTextInput(sf::Event& event);
     void handleMouseClick(int x, int y);
     void handleKeyPress(sf::Keyboard::Key key);

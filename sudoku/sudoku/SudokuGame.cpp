@@ -24,6 +24,19 @@ SudokuGame::SudokuGame() : window(sf::VideoMode(1366, 768), "Sudoku Game") {
     backText.setFillColor(sf::Color::White);
     backText.setPosition(backButton.getPosition().x + 35, backButton.getPosition().y + 15);
 
+    solutionButton.setSize(sf::Vector2f(240, 20));
+    solutionButton.setFillColor(sf::Color(1, 93, 157));
+    solutionButton.setOutlineThickness(6);
+    solutionButton.setOutlineColor(sf::Color::Black);
+    solutionButton.setPosition(165, 540);
+
+    solutionButtonText.setFont(font);
+    solutionButtonText.setString("MOSTRAR SOLUCIÓN");
+    solutionButtonText.setCharacterSize(10);
+    solutionButtonText.setFillColor(sf::Color::White);
+    solutionButtonText.setPosition(solutionButton.getPosition().x + 30, solutionButton.getPosition().y + 7);
+
+
     saveButton.setSize(sf::Vector2f(240, 50));
     saveButton.setFillColor(sf::Color(1, 93, 157));
     saveButton.setOutlineThickness(6);
@@ -48,11 +61,70 @@ SudokuGame::SudokuGame() : window(sf::VideoMode(1366, 768), "Sudoku Game") {
     nameInputBox.setOutlineColor(sf::Color::Black);
     nameInputBox.setPosition(30, 618);
 
+    solutionText.setFont(font);
+    solutionText.setCharacterSize(10);
+    solutionText.setFillColor(sf::Color::Black);
+    solutionText.setPosition(160, 150);
+
+
     generateSudoku();
 
     sudokuGrid = new SudokuGrid(initialGrid, solutionGrid, font);
     gameClock.restart();
 }
+
+void SudokuGame::drawSolutionGrid() {
+    const int cellSize = 40;
+    const int offsetX = 105;
+    const int offsetY = 165;
+
+    sf::RectangleShape gridFrame(sf::Vector2f(cellSize * SIZE, cellSize * SIZE));
+    gridFrame.setPosition(offsetX, offsetY);
+    gridFrame.setFillColor(sf::Color::Transparent);
+    gridFrame.setOutlineThickness(3);
+    gridFrame.setOutlineColor(sf::Color(1, 93, 157));
+    window.draw(gridFrame);
+
+    for (int row = 0; row < SIZE; ++row) {
+        for (int col = 0; col < SIZE; ++col) {
+            sf::RectangleShape cell(sf::Vector2f(cellSize, cellSize));
+            cell.setPosition(offsetX + col * cellSize, offsetY + row * cellSize);
+            cell.setFillColor(sf::Color::White);
+            cell.setOutlineThickness(1);
+            cell.setOutlineColor(sf::Color::Black);
+            window.draw(cell);
+
+            if (showSolution) {
+                if (solutionGrid[row][col] != 0) {
+                    sf::Text numberText;
+                    numberText.setFont(font);
+                    numberText.setString(std::to_string(solutionGrid[row][col]));
+                    numberText.setCharacterSize(24);
+                    numberText.setFillColor(sf::Color::Black);
+                    numberText.setPosition(
+                        offsetX + col * cellSize + cellSize / 4 - 3,
+                        offsetY + row * cellSize + cellSize / 8 + 3
+                    );
+                    window.draw(numberText);
+                }
+            }
+        }
+    }
+
+    for (int row = 0; row < SIZE; row += 3) {
+        for (int col = 0; col < SIZE; col += 3) {
+            sf::RectangleShape subGridFrame(sf::Vector2f(cellSize * 3, cellSize * 3));
+            subGridFrame.setPosition(offsetX + col * cellSize, offsetY + row * cellSize);
+            subGridFrame.setFillColor(sf::Color::Transparent);
+            subGridFrame.setOutlineThickness(2);
+            subGridFrame.setOutlineColor(sf::Color(1, 93, 157));
+            window.draw(subGridFrame);
+        }
+    }
+}
+
+
+
 
 void SudokuGame::run() {
     while (window.isOpen()) {
@@ -80,6 +152,7 @@ void SudokuGame::processEvents() {
         isHoveringBackButton = backButton.getGlobalBounds().contains(mousePosition.x, mousePosition.y);
         isHoveringSaveButton = saveButton.getGlobalBounds().contains(mousePosition.x, mousePosition.y);
         isHoveringNameInputBox = nameInputBox.getGlobalBounds().contains(mousePosition.x, mousePosition.y);
+        isHoveringShowSolutionButton = solutionButton.getGlobalBounds().contains(mousePosition.x, mousePosition.y);
 
         if (event.type == sf::Event::MouseButtonPressed && event.mouseButton.button == sf::Mouse::Left) {
             handleMouseClick(event.mouseButton.x, event.mouseButton.y);
@@ -92,6 +165,7 @@ void SudokuGame::processEvents() {
         if (event.type == sf::Event::KeyPressed) {
             handleKeyPress(event.key.code);
         }
+
     }
 }
 
@@ -136,6 +210,11 @@ void SudokuGame::handleMouseClick(int x, int y) {
     }
 	sudokuGrid->handleCellSelection(selectedRow, selectedCol);
 
+    if (solutionButton.getGlobalBounds().contains(x, y)) {
+        showSolution = !showSolution;
+        solutionButtonText.setString(showSolution ? "OCULTAR SOLUCIÓN" : "MOSTRAR SOLUCIÓN");
+    }
+
     if (backButton.getGlobalBounds().contains(x, y)) {
         StartScreen startScreen(font);
         startScreen.draw(window);
@@ -171,6 +250,10 @@ void SudokuGame::handleKeyPress(sf::Keyboard::Key key) {
 void SudokuGame::render() {
     window.clear(sf::Color::White);
     sudokuGrid->draw(window);
+
+    drawThickLines(window);
+
+
     if (isHoveringBackButton) {
         backButton.setFillColor(sf::Color(6, 140, 210));
     }
@@ -201,6 +284,16 @@ void SudokuGame::render() {
     }
     window.draw(nameInputBox);
 
+	if (isHoveringShowSolutionButton) {
+		solutionButton.setFillColor(sf::Color(6, 140, 210));
+	}
+	else {
+		solutionButton.setFillColor(sf::Color(1, 93, 157));
+	}   
+
+	window.draw(solutionButton);
+	window.draw(solutionButtonText);
+
     sf::Text inputText;
     inputText.setFont(font);
     inputText.setString(nameInput);
@@ -222,6 +315,10 @@ void SudokuGame::render() {
     timerText.setString(timeStream.str());
 
     window.draw(timerText);
+    drawSolutionGrid();
+    window.draw(solutionButton);
+    window.draw(solutionButtonText);
+
 
     if (!errorMessage.empty()) {
         sf::Text errorText;
@@ -235,6 +332,39 @@ void SudokuGame::render() {
 
     window.display();
 }
+
+void SudokuGame::drawThickLines(sf::RenderWindow& window) {
+    const float LINE_THICKNESS = 5.0f;
+
+    for (int i = 1; i <= 2; ++i) {
+        float x = GRID_OFFSET_X + i * 3 * CELL_SIZE;
+
+        sf::RectangleShape verticalLine(sf::Vector2f(LINE_THICKNESS, SIZE * CELL_SIZE));
+        verticalLine.setPosition(x, GRID_OFFSET_Y);
+        verticalLine.setFillColor(sf::Color(1, 93, 157));
+
+        window.draw(verticalLine);
+    }
+
+    for (int i = 1; i <= 2; ++i) {
+        float y = GRID_OFFSET_Y + i * 3 * CELL_SIZE;
+
+        sf::RectangleShape horizontalLine(sf::Vector2f(SIZE * CELL_SIZE, LINE_THICKNESS));
+        horizontalLine.setPosition(GRID_OFFSET_X, y);
+        horizontalLine.setFillColor(sf::Color(1, 93, 157));
+
+        window.draw(horizontalLine);
+    }
+
+    sf::RectangleShape frame(sf::Vector2f(SIZE * CELL_SIZE, SIZE * CELL_SIZE));
+    frame.setPosition(GRID_OFFSET_X - LINE_THICKNESS / 2 + 3, GRID_OFFSET_Y - LINE_THICKNESS / 2 + 3);
+    frame.setFillColor(sf::Color::Transparent);
+    frame.setOutlineThickness(LINE_THICKNESS);
+    frame.setOutlineColor(sf::Color(1, 93, 157));
+
+    window.draw(frame);
+}
+
 
 void SudokuGame::saveGame() {
     if (nameInput.getSize() == 0) {
@@ -345,38 +475,35 @@ bool SudokuGame::isSafe(int row, int col, int num) {
 bool SudokuGame::solveSudoku() {
     for (int row = 0; row < SIZE; row++) {
         for (int col = 0; col < SIZE; col++) {
-            if (solutionGrid[row][col] == 0) { // Encuentra una celda vacía
+            if (solutionGrid[row][col] == 0) {
                 for (int num = 1; num <= SIZE; num++) {
                     if (isSafe(row, col, num)) {
-                        solutionGrid[row][col] = num; // Coloca el número
+                        solutionGrid[row][col] = num;
                         if (solveSudoku()) {
-                            return true; // Recursión
+                            return true;
                         }
-                        solutionGrid[row][col] = 0; // Deshacer
+                        solutionGrid[row][col] = 0;
                     }
                 }
-                return false; // No se pudo colocar ningún número
+                return false;
             }
         }
     }
-    return true; // Sudoku resuelto
+    return true;
 }
 
-// Genera un Sudoku válido y su solución
 void SudokuGame::generateSudoku() {
-    solutionGrid.assign(SIZE, std::vector<int>(SIZE, 0)); // Inicializa la solución
-    solveSudoku(); // Resuelve el Sudoku para llenar la solución
+    solutionGrid.assign(SIZE, std::vector<int>(SIZE, 0));
+    solveSudoku();
 
-    // Genera un puzzle a partir de la solución
-    initialGrid = solutionGrid; // Copia la solución a initialGrid
+    initialGrid = solutionGrid;
 
-    // Elimina algunos números para crear el puzzle
-    int numToRemove = 40; // Puedes ajustar la dificultad
+    int numToRemove = 40;
     while (numToRemove > 0) {
         int i = rand() % SIZE;
         int j = rand() % SIZE;
         if (initialGrid[i][j] != 0) {
-            initialGrid[i][j] = 0; // Elimina el número
+            initialGrid[i][j] = 0;
             numToRemove--;
         }
     }

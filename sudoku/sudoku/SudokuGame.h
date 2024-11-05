@@ -2,6 +2,8 @@
 #include <SFML/Graphics.hpp>
 #include "SudokuGrid.h"
 
+using namespace std;
+
 class SudokuGame {
 public:
     SudokuGame();
@@ -12,6 +14,10 @@ private:
     sf::RenderWindow window;
     sf::Font font;
     SudokuGrid* sudokuGrid;
+    sf::Clock clock;
+    bool showWinScreen = false;
+   vector<vector<int>> solutionGrid;
+    vector<vector<int>> initialGrid;
 
     int selectedRow = -1;
     int selectedCol = -1;
@@ -23,6 +29,8 @@ private:
     sf::Text nameLabel;
     sf::RectangleShape nameInputBox;
     sf::String nameInput;
+    sf::RectangleShape acceptButton;
+    sf::Text acceptText;
     bool isNameInputSelected = false;
 
     sf::Clock gameClock;
@@ -39,4 +47,8 @@ private:
     void handleMouseClick(int x, int y);
     void handleKeyPress(sf::Keyboard::Key key);
     void saveGame();
+    void showWindowWin();
+    bool isSafe(int row, int col, int num);
+    bool solveSudoku();
+    void generateSudoku();
 };

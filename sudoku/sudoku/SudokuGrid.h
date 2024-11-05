@@ -8,11 +8,13 @@
 class SudokuGrid {
 public:
     SudokuGrid();
-    SudokuGrid(int grid[9][9], sf::Font& font);
+    SudokuGrid(vector<vector<int>> grid, vector<vector<int>> solGrid, sf::Font& font);
+    //SudokuGrid(int grid[9][9], int solGrid[9][9], sf::Font& font);
     void draw(sf::RenderWindow& window);
     Cell* getCellAt(float x, float y);
     void handleCellSelection(int x, int y);
-    void setCellValue(int x, int y, int value);
+    void setCellValue(int x, int y, int value); 
+    bool isCompleted();
 
 private:
     std::vector<std::vector<Cell>> cells;
@@ -20,4 +22,5 @@ private:
     int selectedCellX;
     int selectedCellY;
     const float CELL_SIZE = 80.0f;
+    int solutionGrid[9][9];
 };

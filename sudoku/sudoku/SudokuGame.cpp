@@ -5,6 +5,7 @@
 constexpr float GRID_OFFSET_X = 600.0f;
 constexpr float GRID_OFFSET_Y = 25.0f;
 constexpr float CELL_SIZE = 80.0f;
+static const int SIZE = 9;
 
 SudokuGame::SudokuGame() : window(sf::VideoMode(1366, 768), "Sudoku Game") {
     if (!font.loadFromFile("resources/fonts/SpaceComics.ttf")) {
@@ -47,19 +48,9 @@ SudokuGame::SudokuGame() : window(sf::VideoMode(1366, 768), "Sudoku Game") {
     nameInputBox.setOutlineColor(sf::Color::Black);
     nameInputBox.setPosition(30, 618);
 
-    int initialGrid[9][9] = {
-        {5, 3, 0, 0, 7, 0, 0, 0, 0},
-        {6, 0, 0, 1, 9, 5, 0, 0, 0},
-        {0, 9, 8, 0, 0, 0, 0, 6, 0},
-        {8, 0, 0, 0, 6, 0, 0, 0, 3},
-        {4, 0, 0, 8, 0, 3, 0, 0, 1},
-        {7, 0, 0, 0, 2, 0, 0, 0, 6},
-        {0, 6, 0, 0, 0, 0, 2, 8, 0},
-        {0, 0, 0, 4, 1, 9, 0, 0, 5},
-        {0, 0, 0, 0, 8, 0, 0, 7, 9}
-    };
+    generateSudoku();
 
-    sudokuGrid = new SudokuGrid(initialGrid, font);
+    sudokuGrid = new SudokuGrid(initialGrid, solutionGrid, font);
     gameClock.restart();
 }
 
@@ -68,8 +59,15 @@ void SudokuGame::run() {
         elapsedTime = gameClock.getElapsedTime().asSeconds();
         processEvents();
         render();
+        if (showWinScreen) {
+            if (clock.getElapsedTime().asSeconds() >= 1) {
+                showWindowWin();
+                showWinScreen = false; 
+            }
+        }
     }
 }
+
 
 void SudokuGame::processEvents() {
     sf::Event event;
@@ -114,7 +112,7 @@ void SudokuGame::handleTextInput(sf::Event& event) {
 
     if (event.type == sf::Event::KeyPressed) {
         if (event.key.code >= sf::Keyboard::Num1 && event.key.code <= sf::Keyboard::Num9) {
-            lastPressedNumber = event.key.code - sf::Keyboard::Num1 + 1; // Mapea la tecla a un número del 1 al 9
+            lastPressedNumber = event.key.code - sf::Keyboard::Num1 + 1;
         }
     }
 }
@@ -159,10 +157,13 @@ void SudokuGame::handleKeyPress(sf::Keyboard::Key key) {
     else if (key >= sf::Keyboard::Numpad1 && key <= sf::Keyboard::Numpad9) {
         value = key - sf::Keyboard::Numpad0;
     }
-	cout << "Value: " << value << endl;
 
-    if (value != -1 ) {
+    if (value != -1) {
         sudokuGrid->setCellValue(selectedRow, selectedCol, value);
+        if (sudokuGrid->isCompleted()) {
+            showWinScreen = true;
+            clock.restart();
+        }
     }
 }
 
@@ -242,5 +243,141 @@ void SudokuGame::saveGame() {
     else {
         errorMessage.clear();
         std::cout << "Juego guardado con nombre: " << nameInput.toAnsiString() << std::endl;
+    }
+}
+
+void SudokuGame::showWindowWin() {
+    sf::RenderWindow winWindow(sf::VideoMode(1166, 568), "¡Felicidades!", sf::Style::None);
+    winWindow.setPosition({ window.getPosition().x + 100, window.getPosition().y + 100 });
+    sf::Texture backgroundTexture;
+    sf::Sprite backgroundSprite;
+
+    if (!backgroundTexture.loadFromFile("resources/imgs/winbackground.png")) {
+        throw std::runtime_error("No se pudo cargar la imagen de fondo.");
+    }
+
+    backgroundSprite.setTexture(backgroundTexture);
+
+    backgroundSprite.setScale(
+        1166.0f / backgroundTexture.getSize().x,
+        568.0f / backgroundTexture.getSize().y
+    );
+
+    sf::Text winMessage;
+    winMessage.setFont(font);
+    winMessage.setCharacterSize(24);
+    winMessage.setFillColor(sf::Color::Black);
+    winMessage.setPosition(190, 225);
+
+    int minutes = static_cast<int>(elapsedTime) / 60;
+    int seconds = static_cast<int>(elapsedTime) % 60;
+    std::stringstream timeStream;
+    timeStream << "¡COMPLETASTE EL JUEGO EN " << minutes << ":" << seconds << " MIN!";
+    winMessage.setString(timeStream.str());
+
+    acceptButton.setSize(sf::Vector2f(200, 50));
+    acceptButton.setFillColor(sf::Color(1, 93, 157));
+    acceptButton.setOutlineThickness(3);
+    acceptButton.setOutlineColor(sf::Color::Black);
+    acceptButton.setPosition(483, 259);
+
+    acceptText.setFont(font);
+    acceptText.setString("ACEPTAR");
+    acceptText.setCharacterSize(20);
+    acceptText.setFillColor(sf::Color::White);
+    acceptText.setPosition(acceptButton.getPosition().x + 20, acceptButton.getPosition().y + 15);
+
+    bool isHoveringAcceptButton = false;
+
+    while (winWindow.isOpen()) {
+        sf::Event event;
+        while (winWindow.pollEvent(event)) {
+            if (event.type == sf::Event::Closed) {
+                StartScreen startScreen(font);
+                startScreen.draw(window);
+                winWindow.close();
+                return;
+            }
+
+            if (event.type == sf::Event::MouseMoved) {
+                sf::Vector2i mousePosition = sf::Mouse::getPosition(winWindow);
+                isHoveringAcceptButton = acceptButton.getGlobalBounds().contains(mousePosition.x, mousePosition.y);
+            }
+
+            if (event.type == sf::Event::MouseButtonPressed && event.mouseButton.button == sf::Mouse::Left) {
+                sf::Vector2i mousePosition = sf::Mouse::getPosition(winWindow);
+                if (acceptButton.getGlobalBounds().contains(mousePosition.x, mousePosition.y)) {
+                    winWindow.close();
+                    window.close();
+                    StartScreen startScreen(font);
+                    startScreen.draw(window);
+                    return;
+                }
+            }
+        }
+
+        if (isHoveringAcceptButton) {
+            acceptButton.setFillColor(sf::Color(6, 140, 210));
+        }
+        else {
+            acceptButton.setFillColor(sf::Color(1, 93, 157));
+        }
+
+        winWindow.clear();
+        winWindow.draw(backgroundSprite);
+        winWindow.draw(winMessage);
+        winWindow.draw(acceptButton);
+        winWindow.draw(acceptText);
+        winWindow.display();
+    }
+}
+
+bool SudokuGame::isSafe(int row, int col, int num) {
+    for (int x = 0; x < SIZE; x++) {
+        if (solutionGrid[row][x] == num || solutionGrid[x][col] == num ||
+            solutionGrid[row - row % 3 + x / 3][col - col % 3 + x % 3] == num) {
+            return false;
+        }
+    }
+    return true;
+}
+
+bool SudokuGame::solveSudoku() {
+    for (int row = 0; row < SIZE; row++) {
+        for (int col = 0; col < SIZE; col++) {
+            if (solutionGrid[row][col] == 0) { // Encuentra una celda vacía
+                for (int num = 1; num <= SIZE; num++) {
+                    if (isSafe(row, col, num)) {
+                        solutionGrid[row][col] = num; // Coloca el número
+                        if (solveSudoku()) {
+                            return true; // Recursión
+                        }
+                        solutionGrid[row][col] = 0; // Deshacer
+                    }
+                }
+                return false; // No se pudo colocar ningún número
+            }
+        }
+    }
+    return true; // Sudoku resuelto
+}
+
+// Genera un Sudoku válido y su solución
+void SudokuGame::generateSudoku() {
+    solutionGrid.assign(SIZE, std::vector<int>(SIZE, 0)); // Inicializa la solución
+    solveSudoku(); // Resuelve el Sudoku para llenar la solución
+
+    // Genera un puzzle a partir de la solución
+    initialGrid = solutionGrid; // Copia la solución a initialGrid
+
+    // Elimina algunos números para crear el puzzle
+    int numToRemove = 40; // Puedes ajustar la dificultad
+    while (numToRemove > 0) {
+        int i = rand() % SIZE;
+        int j = rand() % SIZE;
+        if (initialGrid[i][j] != 0) {
+            initialGrid[i][j] = 0; // Elimina el número
+            numToRemove--;
+        }
     }
 }

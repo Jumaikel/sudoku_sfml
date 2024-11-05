@@ -63,7 +63,7 @@ void Cell::draw(sf::RenderWindow& window) {
 void Cell::select() {
     if (isEditable) {
         isSelected = true;
-		shape.setFillColor(sf::Color(1, 93, 157));
+		shape.setFillColor(sf::Color(6, 140, 210));
     }
 }
 
@@ -84,7 +84,7 @@ void Cell::handleInput(sf::Event event) {
             int num = event.text.unicode - '0';
             setValue(num);
         }
-        else if (event.text.unicode == 8) { // Manejo de retroceso
+        else if (event.text.unicode == 8) {
             setValue(0);
         }
     }

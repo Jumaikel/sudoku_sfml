@@ -1,25 +1,23 @@
 #pragma once
 #include <iostream>
 #include <array>
+#include <random>
 #include <SFML/Graphics.hpp>
-#include "MiniGrid.h"
-using namespace std;
+#include "Cell.h"
 
 class SudokuGrid {
-private:
-    array<array<MiniGrid, 3>, 3> grids;
-    float gridSize;
-
 public:
-    SudokuGrid(sf::Font& font, float gridSize);
-    void generatePuzzle();
-    void setValue(int row, int col, int value);
-    int getValue(int row, int col) const;
-    void draw(sf::RenderWindow& window, float offsetX, float offsetY);
-    bool isValidMove(int row, int col, int value) const;
-    bool isSafe(int row, int col, int num);
-    bool solveGrid();
-    void removeCells(int numCells);
-    bool isCellEditable(int row, int col) const;
-};
+    SudokuGrid();
+    SudokuGrid(int grid[9][9], sf::Font& font);
+    void draw(sf::RenderWindow& window);
+    Cell* getCellAt(float x, float y);
+    void handleCellSelection(int x, int y);
+    void setCellValue(int x, int y, int value);
 
+private:
+    std::vector<std::vector<Cell>> cells;
+    Cell* selectedCell;
+    int selectedCellX;
+    int selectedCellY;
+    const float CELL_SIZE = 80.0f;
+};

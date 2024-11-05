@@ -8,6 +8,7 @@ class Cell {
 private:
     int value;
     bool isEditable;
+    bool isSelected;
     sf::RectangleShape shape;
     sf::Text text;
 
@@ -20,4 +21,9 @@ public:
     void setEditable(bool editable);
     void draw(sf::RenderWindow& window);
     void setPosition(float x, float y);
+
+    void select();
+    void deselect();
+    bool contains(sf::Vector2f point) const;
+    void handleInput(sf::Event event);
 };

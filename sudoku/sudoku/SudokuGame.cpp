@@ -2,15 +2,14 @@
 #include <sstream>
 #include "StartScreen.h"
 
-constexpr float GRID_OFFSET_X = 570.0f;
-constexpr float GRID_OFFSET_Y = 10.0f;
+constexpr float GRID_OFFSET_X = 600.0f;
+constexpr float GRID_OFFSET_Y = 25.0f;
 constexpr float CELL_SIZE = 80.0f;
 
-SudokuGame::SudokuGame() : window(sf::VideoMode(1366, 768), "Sudoku Game"), sudokuGrid(font, 250.0f) {
+SudokuGame::SudokuGame() : window(sf::VideoMode(1366, 768), "Sudoku Game") {
     if (!font.loadFromFile("resources/fonts/SpaceComics.ttf")) {
         throw std::runtime_error("No se pudo cargar la fuente.");
     }
-    sudokuGrid.generatePuzzle();
 
     backButton.setSize(sf::Vector2f(240, 50));
     backButton.setFillColor(sf::Color(1, 93, 157));
@@ -48,6 +47,19 @@ SudokuGame::SudokuGame() : window(sf::VideoMode(1366, 768), "Sudoku Game"), sudo
     nameInputBox.setOutlineColor(sf::Color::Black);
     nameInputBox.setPosition(30, 618);
 
+    int initialGrid[9][9] = {
+        {5, 3, 0, 0, 7, 0, 0, 0, 0},
+        {6, 0, 0, 1, 9, 5, 0, 0, 0},
+        {0, 9, 8, 0, 0, 0, 0, 6, 0},
+        {8, 0, 0, 0, 6, 0, 0, 0, 3},
+        {4, 0, 0, 8, 0, 3, 0, 0, 1},
+        {7, 0, 0, 0, 2, 0, 0, 0, 6},
+        {0, 6, 0, 0, 0, 0, 2, 8, 0},
+        {0, 0, 0, 4, 1, 9, 0, 0, 5},
+        {0, 0, 0, 0, 8, 0, 0, 7, 9}
+    };
+
+    sudokuGrid = new SudokuGrid(initialGrid, font);
     gameClock.restart();
 }
 
@@ -71,10 +83,8 @@ void SudokuGame::processEvents() {
         isHoveringSaveButton = saveButton.getGlobalBounds().contains(mousePosition.x, mousePosition.y);
         isHoveringNameInputBox = nameInputBox.getGlobalBounds().contains(mousePosition.x, mousePosition.y);
 
-        if (event.type == sf::Event::MouseButtonPressed) {
-            if (event.mouseButton.button == sf::Mouse::Left) {
-                handleMouseClick(event.mouseButton.x, event.mouseButton.y);
-            }
+        if (event.type == sf::Event::MouseButtonPressed && event.mouseButton.button == sf::Mouse::Left) {
+            handleMouseClick(event.mouseButton.x, event.mouseButton.y);
         }
 
         if (event.type == sf::Event::TextEntered) {
@@ -101,6 +111,12 @@ void SudokuGame::handleTextInput(sf::Event& event) {
             }
         }
     }
+
+    if (event.type == sf::Event::KeyPressed) {
+        if (event.key.code >= sf::Keyboard::Num1 && event.key.code <= sf::Keyboard::Num9) {
+            lastPressedNumber = event.key.code - sf::Keyboard::Num1 + 1; // Mapea la tecla a un número del 1 al 9
+        }
+    }
 }
 
 void SudokuGame::handleMouseClick(int x, int y) {
@@ -110,17 +126,17 @@ void SudokuGame::handleMouseClick(int x, int y) {
     else {
         isNameInputSelected = false;
     }
-
     int localX = x - GRID_OFFSET_X;
     int localY = y - GRID_OFFSET_Y;
 
-    selectedRow = localY / CELL_SIZE;
-    selectedCol = localX / CELL_SIZE;
+    selectedRow = localX / CELL_SIZE;
+    selectedCol = localY / CELL_SIZE;
 
     if (selectedRow < 0 || selectedRow >= 9 || selectedCol < 0 || selectedCol >= 9) {
         selectedRow = -1;
         selectedCol = -1;
     }
+	sudokuGrid->handleCellSelection(selectedRow, selectedCol);
 
     if (backButton.getGlobalBounds().contains(x, y)) {
         StartScreen startScreen(font);
@@ -136,7 +152,6 @@ void SudokuGame::handleKeyPress(sf::Keyboard::Key key) {
     if (selectedRow == -1 || selectedCol == -1) {
         return;
     }
-
     int value = -1;
     if (key >= sf::Keyboard::Num1 && key <= sf::Keyboard::Num9) {
         value = key - sf::Keyboard::Num0;
@@ -144,26 +159,17 @@ void SudokuGame::handleKeyPress(sf::Keyboard::Key key) {
     else if (key >= sf::Keyboard::Numpad1 && key <= sf::Keyboard::Numpad9) {
         value = key - sf::Keyboard::Numpad0;
     }
+	cout << "Value: " << value << endl;
 
-    if (value != -1 && sudokuGrid.isCellEditable(selectedRow, selectedCol)) {
-        sudokuGrid.setValue(selectedRow, selectedCol, value);
+    if (value != -1 ) {
+        sudokuGrid->setCellValue(selectedRow, selectedCol, value);
     }
 }
 
+
 void SudokuGame::render() {
     window.clear(sf::Color::White);
-
-    sudokuGrid.draw(window, GRID_OFFSET_X, GRID_OFFSET_Y);
-
-    if (selectedRow != -1 && selectedCol != -1) {
-        sf::RectangleShape selection(sf::Vector2f(CELL_SIZE, CELL_SIZE));
-        selection.setPosition(GRID_OFFSET_X + selectedCol * CELL_SIZE, GRID_OFFSET_Y + selectedRow * CELL_SIZE);
-        selection.setFillColor(sf::Color::Transparent);
-        selection.setOutlineColor(sf::Color::Blue);
-        selection.setOutlineThickness(2);
-        window.draw(selection);
-    }
-
+    sudokuGrid->draw(window);
     if (isHoveringBackButton) {
         backButton.setFillColor(sf::Color(6, 140, 210));
     }
@@ -229,14 +235,11 @@ void SudokuGame::render() {
     window.display();
 }
 
-
-
 void SudokuGame::saveGame() {
     if (nameInput.getSize() == 0) {
         errorMessage = "SE NECESITA UN NOMBRE";
     }
     else {
-     
         errorMessage.clear();
         std::cout << "Juego guardado con nombre: " << nameInput.toAnsiString() << std::endl;
     }

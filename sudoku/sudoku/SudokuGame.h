@@ -1,43 +1,42 @@
 #pragma once
-#include <iostream>
 #include <SFML/Graphics.hpp>
 #include "SudokuGrid.h"
 
-using namespace std;
-
 class SudokuGame {
-private:
-    sf::RenderWindow window;
-    sf::Font font;
-    SudokuGrid sudokuGrid;
-    int selectedRow = -1;
-    int selectedCol = -1;
-    sf::RectangleShape backButton;
-    sf::RectangleShape saveButton;
-    sf::Text backText;
-    sf::Text saveText;
-    sf::Text nameLabel;
-    sf::String nameInput;
-    sf::RectangleShape nameInputBox;
-    bool isHoveringBackButton = false;
-    bool isHoveringSaveButton = false;
-    bool isHoveringNameInputBox = false;
-    sf::Clock gameClock;
-    float elapsedTime;
-
-    bool isNameInputSelected = false;
-
-    string errorMessage;
-
 public:
     SudokuGame();
     void run();
-    void processEvents();
-    void render();
-    void saveGame();
 
 private:
+    int lastPressedNumber;
+    sf::RenderWindow window;
+    sf::Font font;
+    SudokuGrid* sudokuGrid;
+
+    int selectedRow = -1;
+    int selectedCol = -1;
+
+    sf::RectangleShape backButton;
+    sf::Text backText;
+    sf::RectangleShape saveButton;
+    sf::Text saveText;
+    sf::Text nameLabel;
+    sf::RectangleShape nameInputBox;
+    sf::String nameInput;
+    bool isNameInputSelected = false;
+
+    sf::Clock gameClock;
+    float elapsedTime = 0.0f;
+    std::string errorMessage;
+
+    bool isHoveringBackButton = false;
+    bool isHoveringSaveButton = false;
+    bool isHoveringNameInputBox = false;
+
+    void processEvents();
+    void render();
+    void handleTextInput(sf::Event& event);
     void handleMouseClick(int x, int y);
     void handleKeyPress(sf::Keyboard::Key key);
-    void handleTextInput(sf::Event& event);
+    void saveGame();
 };

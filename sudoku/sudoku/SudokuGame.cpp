@@ -13,17 +13,20 @@ SudokuGame::SudokuGame(sf::RenderWindow& window, sf::Font& pfont) : window(windo
     initialize();
     generateSudoku();
     sudokuGrid = new SudokuGrid(initialGrid, solutionGrid, font);
-    gameClock.restart();
+	elapsedTime = 0.0f;
+	gameClock.restart();
+	clock.restart();
 }
 
 SudokuGame::SudokuGame(sf::RenderWindow& window, sf::Font& pfont, vector<vector<int>> grid, vector<vector<int>> solGrid, string name, float elapsedTime) : window(window), font(pfont) {
     initialize();
 	this->nameInput = name;
-	this->elapsedTime = elapsedTime;
 	this->initialGrid = grid;
 	this->solutionGrid = solGrid;
+	this->elapsedTime = elapsedTime;
     sudokuGrid = new SudokuGrid(initialGrid, solutionGrid, font);
     gameClock.restart();
+    clock.restart();
 }
 
 void SudokuGame::initialize() {
@@ -146,11 +149,14 @@ void SudokuGame::run() {
     if (goBack) {
         goBack = false;
     }
-        elapsedTime = gameClock.getElapsedTime().asSeconds();
+        if (gameClock.getElapsedTime().asSeconds() >= 1) {
+        elapsedTime++;
+        gameClock.restart();  }
+
         processEvents();
         render();
         if (showWinScreen) {
-            if (clock.getElapsedTime().asSeconds() >= 1) {
+            if (clock.getElapsedTime().asSeconds() >= 0.5) {
                 showWindowWin();
                 showWinScreen = false; 
             }
@@ -397,17 +403,15 @@ void SudokuGame::saveGame() {
         for (int value : row) {
             outFile << value << " ";
         }
-        outFile << "\n";
     }
-
-    outFile << "----\n";
+    outFile << "\n";
 
     for (const auto& row : gameState.solutionGrid) {
         for (int value : row) {
             outFile << value << " ";
         }
-        outFile << "\n";
     }
+    outFile << "\n";
 
     outFile << gameState.elapsedTime << "\n";
     outFile << gameState.name << "\n";
@@ -416,6 +420,7 @@ void SudokuGame::saveGame() {
     messageText.setPosition(187, 665);
     message = "JUEGO GUARDADO";
 }
+
 
 
 void SudokuGame::showWindowWin() {
@@ -540,7 +545,7 @@ void SudokuGame::generateSudoku() {
 
     initialGrid = solutionGrid;
 
-    int numToRemove = 1;
+    int numToRemove = 40;
     while (numToRemove > 0) {
         int i = rand() % SIZE;
         int j = rand() % SIZE;

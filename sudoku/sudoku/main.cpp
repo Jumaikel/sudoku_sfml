@@ -52,6 +52,18 @@ int main() {
             case ScreenState::LoadScreen:
                 loadScreen->draw();
 
+				if (loadScreen->shouldStartGame()) {
+                    
+					string name = loadScreen->getLoadedGameState().name;
+					vector<vector<int>> grid = loadScreen->getLoadedGameState().currentGrid;
+					vector<vector<int>> solution = loadScreen->getLoadedGameState().solutionGrid;
+					float time = loadScreen->getLoadedGameState().elapsedTime;
+
+					sudokuGame = new SudokuGame(window, font, grid, solution, name, time);
+					currentState = ScreenState::SudokuGame;
+				}
+				else
+
                 if (loadScreen->shouldGoBack()) {
                     currentState = ScreenState::StartScreen;
                 }

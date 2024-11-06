@@ -18,13 +18,14 @@ SudokuGame::SudokuGame(sf::RenderWindow& window, sf::Font& pfont) : window(windo
 	clock.restart();
 }
 
-SudokuGame::SudokuGame(sf::RenderWindow& window, sf::Font& pfont, vector<vector<int>> grid, vector<vector<int>> solGrid, string name, float elapsedTime) : window(window), font(pfont) {
+SudokuGame::SudokuGame(sf::RenderWindow& window, sf::Font& pfont, vector<vector<int>> initialGrid, vector<vector<int>> grid, vector<vector<int>> solGrid, string name, float elapsedTime) : window(window), font(pfont) {
     initialize();
 	this->nameInput = name;
-	this->initialGrid = grid;
+	this->initialGrid = initialGrid;
 	this->solutionGrid = solGrid;
 	this->elapsedTime = elapsedTime;
     sudokuGrid = new SudokuGrid(initialGrid, solutionGrid, font);
+	sudokuGrid->fillEmptyCells(grid);
     gameClock.restart();
     clock.restart();
 }
@@ -387,7 +388,7 @@ void SudokuGame::saveGame() {
         return;
     }
 
-    GameState gameState(sudokuGrid->getCurrentGrid(), solutionGrid, elapsedTime, nameInput);
+    GameState gameState(sudokuGrid->getCurrentGrid(),initialGrid, solutionGrid, elapsedTime, nameInput);
 
     std::ostringstream fileNameStream;
     fileNameStream << nameInput.toAnsiString() << ".txt";
@@ -398,6 +399,13 @@ void SudokuGame::saveGame() {
         message = "NO SE PUDO ABRIR EL ARCHIVO PARA GUARDAR";
         return;
     }
+
+    for (const auto& row : gameState.initialGrid) {
+        for (int value : row) {
+            outFile << value << " ";
+        }
+    }
+    outFile << "\n";
 
     for (const auto& row : gameState.currentGrid) {
         for (int value : row) {
@@ -420,6 +428,7 @@ void SudokuGame::saveGame() {
     messageText.setPosition(187, 665);
     message = "JUEGO GUARDADO";
 }
+
 
 
 
@@ -545,7 +554,7 @@ void SudokuGame::generateSudoku() {
 
     initialGrid = solutionGrid;
 
-    int numToRemove = 40;
+    int numToRemove = 37;
     while (numToRemove > 0) {
         int i = rand() % SIZE;
         int j = rand() % SIZE;

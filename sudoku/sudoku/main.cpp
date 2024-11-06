@@ -55,11 +55,12 @@ int main() {
 				if (loadScreen->shouldStartGame()) {
                     
 					string name = loadScreen->getLoadedGameState().name;
+                    vector<vector<int>> initialGrid = loadScreen->getLoadedGameState().initialGrid;
 					vector<vector<int>> grid = loadScreen->getLoadedGameState().currentGrid;
 					vector<vector<int>> solution = loadScreen->getLoadedGameState().solutionGrid;
 					float time = loadScreen->getLoadedGameState().elapsedTime;
 
-					sudokuGame = new SudokuGame(window, font, grid, solution, name, time);
+					sudokuGame = new SudokuGame(window, font, initialGrid, grid, solution, name, time);
 					currentState = ScreenState::SudokuGame;
 				}
 				else

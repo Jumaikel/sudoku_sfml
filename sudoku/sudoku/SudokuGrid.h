@@ -14,6 +14,7 @@ public:
     void handleCellSelection(int x, int y);
     void setCellValue(int x, int y, int value); 
     bool isCompleted();
+    void fillEmptyCells(const std::vector<std::vector<int>>& fillValues);
     std::vector<std::vector<int>> getCurrentGrid() const;
 
 private:

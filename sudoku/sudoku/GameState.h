@@ -2,14 +2,15 @@
 #include <vector>
 #include <string>
 
-
+using namespace std;
 
 struct GameState {
-    std::vector<std::vector<int>> currentGrid;
-    std::vector<std::vector<int>> solutionGrid;
+    vector<vector<int>> currentGrid;
+    vector<vector<int>> initialGrid;
+    vector<vector<int>> solutionGrid;
     float elapsedTime;
-    std::string name;
+    string name;
 
-    GameState(std::vector<std::vector<int>> current, std::vector<std::vector<int>> solution, float time, const std::string& name);
+    GameState(vector<vector<int>> current, vector<vector<int>> initialGrid, vector<vector<int>> solution, float time, const string& name);
 	GameState();
 };

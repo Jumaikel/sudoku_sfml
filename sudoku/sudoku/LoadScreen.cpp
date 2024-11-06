@@ -2,7 +2,7 @@
 #include <iostream>
 #include <filesystem>
 #include <algorithm>
-#include <fstream> // Para leer archivos
+#include <fstream>
 
 LoadScreen::LoadScreen(sf::RenderWindow& window, sf::Font& pfont) : window(window), font(pfont) {
     backButton.setSize(sf::Vector2f(240, 50));
@@ -102,8 +102,13 @@ void LoadScreen::readSavedGame(const std::string& gameName) {
     std::ifstream file("games/" + gameName);
     if (file.is_open()) {
 
+        std::vector<int> initialGridValues(81);
         std::vector<int> currentGridValues(81); 
         std::vector<int> solutionGridValues(81); 
+
+        for (int i = 0; i < 81; ++i) {
+            file >> initialGridValues[i];
+        }
 
         for (int i = 0; i < 81; ++i) {
             file >> currentGridValues[i];
@@ -115,6 +120,7 @@ void LoadScreen::readSavedGame(const std::string& gameName) {
 
         for (int row = 0; row < 9; ++row) {
             for (int col = 0; col < 9; ++col) {
+                loadedGameState.initialGrid[row][col] = initialGridValues[row * 9 + col];
                 loadedGameState.currentGrid[row][col] = currentGridValues[row * 9 + col];
                 loadedGameState.solutionGrid[row][col] = solutionGridValues[row * 9 + col];
             }

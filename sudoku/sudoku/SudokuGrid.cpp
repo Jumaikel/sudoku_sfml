@@ -73,3 +73,13 @@ bool SudokuGrid::isCompleted() {
     return true;
 }
 
+void SudokuGrid::fillEmptyCells(const std::vector<std::vector<int>>& fillValues) {
+    for (int i = 0; i < 9; ++i) {
+        for (int j = 0; j < 9; ++j) {
+            if (cells[i][j].getValue() == 0 && i < fillValues.size() && j < fillValues[i].size() && fillValues[i][j] != 0) {
+                cells[i][j].setValue(fillValues[i][j]);
+            }
+        }
+    }
+}
+

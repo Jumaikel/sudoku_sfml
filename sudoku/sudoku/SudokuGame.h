@@ -12,7 +12,7 @@ using namespace std;
 class SudokuGame {
 public:
     SudokuGame(sf::RenderWindow& window, sf::Font& pfont);
-    SudokuGame(sf::RenderWindow& window, sf::Font& pfont, vector<vector<int>> grid, vector<vector<int>> solGrid, string name, float elapsedTime);
+    SudokuGame(sf::RenderWindow& window, sf::Font& pfont, vector<vector<int>> initialGrid, vector<vector<int>> grid, vector<vector<int>> solGrid, string name, float elapsedTime);
     void initialize();
     void drawSolutionGrid();
     void run();

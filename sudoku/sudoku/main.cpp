@@ -17,6 +17,14 @@ int main() {
         return -1;
     }
 
+    sf::Image icon;
+    if (!icon.loadFromFile("resources/icons/icon.png")) {
+        return -1;
+    }
+
+
+    window.setIcon(icon.getSize().x, icon.getSize().y, icon.getPixelsPtr());
+
     ScreenState currentState = ScreenState::StartScreen;
 
     StartScreen* startScreen = new StartScreen(window, font);

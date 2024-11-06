@@ -147,9 +147,13 @@
     <ClInclude Include="Cell.h" />
     <ClInclude Include="GameState.h" />
     <ClInclude Include="LoadScreen.h" />
+    <ClInclude Include="resource.h" />
     <ClInclude Include="StartScreen.h" />
     <ClInclude Include="SudokuGame.h" />
     <ClInclude Include="SudokuGrid.h" />
+  </ItemGroup>
+  <ItemGroup>
+    <ResourceCompile Include="sudoku.rc" />
   </ItemGroup>
   <Import Project="$(VCTargetsPath)\Microsoft.Cpp.targets" />
   <ImportGroup Label="ExtensionTargets">
